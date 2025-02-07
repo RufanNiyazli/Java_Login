@@ -26,6 +26,14 @@ public class Main {
                 }
                 System.out.print("Enter the password:");
                 String logPassword = scanner.nextLine();
+                while(loginProcess(logEmail,logPassword,path)){
+                    System.out.println("Your email or password wrong.");
+                    System.out.print("Enter valid Email.");
+                    logEmail= scanner.nextLine();
+                    logPassword=scanner.nextLine();
+                }
+                System.out.println("Yu succesfully login.");
+
 
 
             } else if (btn == 2) {
@@ -101,6 +109,22 @@ public class Main {
             throw new RuntimeException(e);
         }
         return false;
+    }
+    public static boolean loginProcess(String email ,String password, String path){
+        try {
+            BufferedReader br =new BufferedReader(new FileReader(path));
+            String line ="";
+            while((line=br.readLine())!=null){
+                String[] values =line.split(";");
+                if (values.length >1 && values[1].trim().equalsIgnoreCase(email) && values[2].trim().equalsIgnoreCase(password)){
+                    return false;
+                }
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return true;
     }
 
 
