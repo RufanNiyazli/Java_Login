@@ -26,14 +26,13 @@ public class Main {
                 }
                 System.out.print("Enter the password:");
                 String logPassword = scanner.nextLine();
-                while(loginProcess(logEmail,logPassword,path)){
+                while (loginProcess(logEmail, logPassword, path)) {
                     System.out.println("Your email or password wrong.");
                     System.out.print("Enter valid Email.");
-                    logEmail= scanner.nextLine();
-                    logPassword=scanner.nextLine();
+                    logEmail = scanner.nextLine();
+                    logPassword = scanner.nextLine();
                 }
                 System.out.println("Yu succesfully login.");
-
 
 
             } else if (btn == 2) {
@@ -42,23 +41,22 @@ public class Main {
                 String regUserName = scanner.nextLine();
                 System.out.print("Enter Email");
                 String regEmail = scanner.nextLine();
-                while (!regEmail.matches(".*@.*") || emailExist(path,regEmail)) {
-                    if (!regEmail.matches(".*@.*")){
+                while (!regEmail.matches(".*@.*") || emailExist(path, regEmail)) {
+                    if (!regEmail.matches(".*@.*")) {
 
                         System.out.print("Enter valid email.");
                     }
-                    if (!emailExist(path,regEmail)){
+                    if (!emailExist(path, regEmail)) {
                         System.out.println("This email is exist.");
                     }
                     regEmail = scanner.nextLine();
                 }
                 System.out.print("Enter password atleast a big letter a small letter a number: ");
-                String regPassword =scanner.nextLine();
+                String regPassword = scanner.nextLine();
                 while (!regPassword.matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{6,20}$")) {
                     System.out.println("Enter valid password");
                     regPassword = scanner.nextLine();
                 }
-
 
 
                 try {
@@ -79,6 +77,22 @@ public class Main {
 
 
             } else if (btn == 3) {
+                System.out.print("Enter your registered email: ");
+                String forgotEmail = scanner.nextLine();
+
+                if (!emailExist(path, forgotEmail)) {
+                    System.out.println("Email not found in the system.");
+                } else {
+                    System.out.print("Enter new password (at least one uppercase, one lowercase, and one number): ");
+                    String newPassword = scanner.nextLine();
+                    while (!newPassword.matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{6,20}$")) {
+                        System.out.println("Invalid password format. Try again.");
+                        newPassword = scanner.nextLine();
+                    }
+
+                    updatePassword(path, forgotEmail, newPassword);
+                    System.out.println("Password updated successfully!");
+                }
 
 
             } else if (btn == 4) {
@@ -100,7 +114,7 @@ public class Main {
             String line = "";
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(";");
-                if (values.length > 1 && values[1].trim().equalsIgnoreCase(regEmail)){
+                if (values.length > 1 && values[1].trim().equalsIgnoreCase(regEmail)) {
                     return true;
                 }
             }
@@ -110,13 +124,14 @@ public class Main {
         }
         return false;
     }
-    public static boolean loginProcess(String email ,String password, String path){
+
+    public static boolean loginProcess(String email, String password, String path) {
         try {
-            BufferedReader br =new BufferedReader(new FileReader(path));
-            String line ="";
-            while((line=br.readLine())!=null){
-                String[] values =line.split(";");
-                if (values.length >1 && values[1].trim().equalsIgnoreCase(email) && values[2].trim().equalsIgnoreCase(password)){
+            BufferedReader br = new BufferedReader(new FileReader(path));
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(";");
+                if (values.length > 1 && values[1].trim().equalsIgnoreCase(email) && values[2].trim().equalsIgnoreCase(password)) {
                     return false;
                 }
             }
@@ -125,6 +140,31 @@ public class Main {
             throw new RuntimeException(e);
         }
         return true;
+    }
+
+    public static void updatePassword(String path, String email, String newPassword) {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(path));
+            StringBuilder sb = new StringBuilder();
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(";");
+                if (values.length > 1 && values[1].trim().equalsIgnoreCase(email)) {
+                    values[2] = newPassword; // Täze paroly çalyş
+                    line = String.join(";", values);
+                }
+                sb.append(line).append("\n");
+            }
+            br.close();
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(path));
+            bw.write(sb.toString());
+            bw.flush();
+            bw.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
